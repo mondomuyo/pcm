@@ -38,8 +38,14 @@ if(UNIX)  # LINUX, FREE_BSD, APPLE
 
     # libpcm.so
     add_library(PCM_SHARED SHARED pcm-core.cpp)
+    add_library(C_WRAP SHARED cwrap.cpp)
     # PCM_SILENT in Release* for pcm-core.cpp
     target_compile_definitions(PCM_SHARED PRIVATE
+      $<$<CONFIG:Release>:PCM_SILENT>
+      $<$<CONFIG:MinSizeRel>:PCM_SILENT>
+      $<$<CONFIG:RelWithDebInfo>:PCM_SILENT>
+    )
+    target_compile_definitions(C_WRAP PRIVATE
       $<$<CONFIG:Release>:PCM_SILENT>
       $<$<CONFIG:MinSizeRel>:PCM_SILENT>
       $<$<CONFIG:RelWithDebInfo>:PCM_SILENT>
@@ -50,8 +56,10 @@ if(UNIX)  # LINUX, FREE_BSD, APPLE
         target_link_libraries(PCM_SHARED PRIVATE PCM_STATIC_SILENT PcmMsr Threads::Threads)
     else()
         target_link_libraries(PCM_SHARED PRIVATE PCM_STATIC_SILENT Threads::Threads)
+        target_link_libraries(C_WRAP PRIVATE PCM_STATIC_SILENT Threads::Threads)
     endif()
     set_target_properties(PCM_SHARED PROPERTIES OUTPUT_NAME pcm)
+    set_target_properties(C_WRAP PROPERTIES OUTPUT_NAME cwrap)
 endif()
 
 if(MSVC)
